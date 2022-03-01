@@ -51,5 +51,4 @@ class MyClient(discord.Client):
 intents = discord.Intents.all()
 
 client = MyClient(intents=intents)
-print(secrets.OPEN_SOURCE_TOKEN)
 client.run(secrets.OPEN_SOURCE_TOKEN)
