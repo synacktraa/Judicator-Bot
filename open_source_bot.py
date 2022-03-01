@@ -50,4 +50,4 @@ class MyClient(discord.Client):
 intents = discord.Intents.all()
 
 client = MyClient(intents=intents)
-client.run('OTQ3OTYxMDg3NTIzOTYyOTcw.Yh03jw.Ab2fmpHR-HqYKm-Pz1cV3nMimXM')
+client.run('token')
