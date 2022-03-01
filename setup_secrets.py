@@ -10,9 +10,9 @@ secrets = {
 
 if os.path.exists(SECRETS_STORE_PATH):
     res = input(
-        "It is going to overwrite the existing secrets. Continue? (y/N) : ")
+        "Do you want to overwrite existing secret tokens? YES/NO: ")
 
-    if res != "y":
+    if res.lower() != "yes":
         quit()
 
 
