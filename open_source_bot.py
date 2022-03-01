@@ -1,4 +1,5 @@
 import discord
+import secrets
 
 
 class MyClient(discord.Client):
@@ -50,4 +51,4 @@ class MyClient(discord.Client):
 intents = discord.Intents.all()
 
 client = MyClient(intents=intents)
-client.run('token')
+client.run(secrets.OPEN_SOURCE_TOKEN)
