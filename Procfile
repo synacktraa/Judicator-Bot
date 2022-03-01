@@ -1,1 +1,1 @@
-discord-bot: python open_source_bot.py
+discord-bot: python judicator.py
