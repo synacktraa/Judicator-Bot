@@ -23,4 +23,4 @@ for key in secrets.keys():
 with open(SECRETS_STORE_PATH, "w") as json_file:
     json.dump(secrets, json_file)
 
-print("Secret tokens have been successfully updated.")
+print("Secret tokens have been successfully updated!")
