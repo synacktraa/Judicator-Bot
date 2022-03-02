@@ -1,40 +1,55 @@
 import discord
 import secrets
 from discord.ext import commands
-import platform # For stats
+import platform  # For stats
 
 intents = discord.Intents.all()
 
-bot = commands.Bot(command_prefix='!', intents=intents)
+"""Different bot activities"""
+name_constant = "!help"
+game_activity = discord.Game(name=name_constant)
+streaming_activity = discord.Streaming(
+    name=name_constant, url="https://www.twitch.tv")
+listeting_activity = discord.Activity(
+    type=discord.ActivityType.listening, name=name_constant)
+watching_activity = discord.Activity(
+    type=discord.ActivityType.watching, name=name_constant)
+
+bot = commands.Bot(command_prefix='!', intents=intents,
+                   status=discord.Status.online)
+# Choose one of the activities
+bot.activity = game_activity
 
 bot.version = '1'
 
 bot.colors = {
-  'WHITE': 0xFFFFFF,
-  'AQUA': 0x1ABC9C,
-  'GREEN': 0x2ECC71,
-  'BLUE': 0x3498DB,
-  'PURPLE': 0x9B59B6,
-  'LUMINOUS_VIVID_PINK': 0xE91E63,
-  'GOLD': 0xF1C40F,
-  'ORANGE': 0xE67E22,
-  'RED': 0xE74C3C,
-  'NAVY': 0x34495E,
-  'DARK_AQUA': 0x11806A,
-  'DARK_GREEN': 0x1F8B4C,
-  'DARK_BLUE': 0x206694,
-  'DARK_PURPLE': 0x71368A,
-  'DARK_VIVID_PINK': 0xAD1457,
-  'DARK_GOLD': 0xC27C0E,
-  'DARK_ORANGE': 0xA84300,
-  'DARK_RED': 0x992D22,
-  'DARK_NAVY': 0x2C3E50
+    'WHITE': 0xFFFFFF,
+    'AQUA': 0x1ABC9C,
+    'GREEN': 0x2ECC71,
+    'BLUE': 0x3498DB,
+    'PURPLE': 0x9B59B6,
+    'LUMINOUS_VIVID_PINK': 0xE91E63,
+    'GOLD': 0xF1C40F,
+    'ORANGE': 0xE67E22,
+    'RED': 0xE74C3C,
+    'NAVY': 0x34495E,
+    'DARK_AQUA': 0x11806A,
+    'DARK_GREEN': 0x1F8B4C,
+    'DARK_BLUE': 0x206694,
+    'DARK_PURPLE': 0x71368A,
+    'DARK_VIVID_PINK': 0xAD1457,
+    'DARK_GOLD': 0xC27C0E,
+    'DARK_ORANGE': 0xA84300,
+    'DARK_RED': 0x992D22,
+    'DARK_NAVY': 0x2C3E50
 }
 bot.color_list = [c for c in bot.colors.values()]
 
+
 @bot.event
 async def on_ready():
-    print(f"-----\nLogged in as: {bot.user.name} : {bot.user.id}\n-----\nMy current prefix is: !\n-----")
+    print(
+        f"-----\nLogged in as: {bot.user.name} : {bot.user.id}\n-----\nMy current prefix is: !\n-----\nMy current activity:{bot.activity}\n----")
 
 
 @bot.event
@@ -73,12 +88,14 @@ async def on_raw_reaction_add(payload):
 async def testing(ctx: commands.Context):
     await ctx.send("I hate my life!")
 
-@bot.command(name='hi', aliases=['hello','yo'])
+
+@bot.command(name='hi', aliases=['hello', 'yo'])
 async def _hi(ctx):
     """
     A simple command which says hi to the author.
     """
     await ctx.send(f"Hi {ctx.author.mention}!")
+
 
 @bot.command(aliases=['disconnect', 'close', 'stopbot'])
 @commands.is_owner()
@@ -88,6 +105,7 @@ async def logout(ctx):
     """
     await ctx.send(f"Hey {ctx.author.mention}, I am now logging out :wave:")
     await bot.logout()
+
 
 @logout.error
 async def logout_error(ctx, error):
@@ -99,6 +117,7 @@ async def logout_error(ctx, error):
     else:
         raise error
 
+
 @bot.command()
 async def stats(ctx):
     """
@@ -109,19 +128,22 @@ async def stats(ctx):
     server_count = len(bot.guilds)
     member_count = len(set(bot.get_all_members()))
 
-    embed = discord.Embed(title=f'{bot.user.name} Stats', description='\uFEFF', colour=ctx.author.colour, timestamp=ctx.message.created_at)
+    embed = discord.Embed(title=f'{bot.user.name} Stats', description='\uFEFF',
+                          colour=ctx.author.colour, timestamp=ctx.message.created_at)
 
     #embed.add_field(name='Bot Version:', value=bot.version)
     embed.add_field(name='Python Version:', value=python_version)
     embed.add_field(name='Discord.Py Version', value=dpy_version)
     embed.add_field(name='Total Guilds:', value=server_count)
     embed.add_field(name='Total Users:', value=member_count)
-    embed.add_field(name='Bot Developers:', value="<@503505263119040522>,<@453579828281475084>")
+    embed.add_field(name='Bot Developers:',
+                    value="<@503505263119040522>,<@453579828281475084>")
 
     embed.set_footer(text=f"{bot.user.name}")
     embed.set_author(name=bot.user.name, icon_url=bot.user.avatar_url)
 
     await ctx.send(embed=embed)
+
 
 @bot.command(name='vc', aliases=['voicechat'])
 async def vc(ctx):
