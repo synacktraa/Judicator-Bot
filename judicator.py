@@ -123,17 +123,12 @@ async def stats(ctx):
 
     await ctx.send(embed=embed)
 
-@bot.event
-async def on_message(message):
-    #Ignore messages sent by yourself
-    if message.author.id == bot.user.id:
-        return
-    #Whenever the bot is tagged, respond with its prefix
-    if f"<@!{947961087523962970}>" in message.content:
-        prefix = '!'
-        prefixMsg = await message.channel.send(f"My prefix here is `{prefix}`")
-        await prefixMsg.add_reaction('👀')
-    await bot.process_commands(message)
+@bot.command(name='vc', aliases=['voicechat'])
+async def vc(ctx):
+    """
+    A simple command which says hi to the author.
+    """
+    await ctx.send("<#636965781208432651>")
 
 
 bot.run(secrets.OPEN_SOURCE_TOKEN)
