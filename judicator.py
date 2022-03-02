@@ -1,5 +1,6 @@
 import discord
 import secrets
+import random
 from discord.ext import commands
 import platform  # For stats
 
@@ -16,7 +17,7 @@ watching_activity = discord.Activity(
     type=discord.ActivityType.watching, name=name_constant)
 
 bot = commands.Bot(command_prefix='!', intents=intents,
-                   status=discord.Status.online)
+                   status=discord.Status.online, help_command=None)
 # Choose one of the activities
 bot.activity = game_activity
 
@@ -49,7 +50,7 @@ bot.color_list = [c for c in bot.colors.values()]
 @bot.event
 async def on_ready():
     print(
-        f"-----\nLogged in as: {bot.user.name} : {bot.user.id}\n-----\nMy current prefix is: !\n-----\nMy current activity:{bot.activity}\n----")
+        f"-----\nLogged in as: {bot.user.name} : {bot.user.id}\n-----\nMy current prefix is: !\n-----\nMy current activity:{bot.activity}\n-----")
 
 
 @bot.event
@@ -84,12 +85,12 @@ async def on_raw_reaction_add(payload):
         pass
 
 
-@bot.command()
-async def testing(ctx: commands.Context):
-    await ctx.send("I hate my life!")
+@bot.command(description="Ping-Pong game")
+async def ping(ctx: commands.Context):
+    await ctx.send("Pong! {0} ms".format(random.randrange(0, 1000)))
 
 
-@bot.command(name='hi', aliases=['hello', 'yo'])
+@bot.command(name='hi', aliases=['hello', 'yo'], description="Greets the user")
 async def _hi(ctx):
     """
     A simple command which says hi to the author.
@@ -97,7 +98,7 @@ async def _hi(ctx):
     await ctx.send(f"Hi {ctx.author.mention}!")
 
 
-@bot.command(aliases=['disconnect', 'close', 'stopbot'])
+@bot.command(aliases=['disconnect', 'close', 'stopbot'], description="Turns off the bot")
 @commands.is_owner()
 async def logout(ctx):
     """
@@ -118,7 +119,7 @@ async def logout_error(ctx, error):
         raise error
 
 
-@bot.command()
+@bot.command(description="Shows bot information")
 async def stats(ctx):
     """
     A usefull command that displays bot statistics.
@@ -145,12 +146,20 @@ async def stats(ctx):
     await ctx.send(embed=embed)
 
 
-@bot.command(name='vc', aliases=['voicechat'])
+@bot.command(name='vc', aliases=['voicechat'], description="Sends voice channel")
 async def vc(ctx):
     """
     A simple command which says hi to the author.
     """
     await ctx.send("<#636965781208432651>")
 
+
+@bot.command(name="help", description="Returns all available commands")
+async def help(ctx: commands.Context):
+    embed = discord.Embed(title=f'Available Commands:', description='\uFEFF',
+                          colour=ctx.author.colour, timestamp=ctx.message.created_at)
+    for command in bot.commands:
+        embed.add_field(name=f"{command}", value=command.description)
+    await ctx.send(embed=embed)
 
 bot.run(secrets.OPEN_SOURCE_TOKEN)
