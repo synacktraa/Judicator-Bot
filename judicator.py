@@ -10,7 +10,7 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 @bot.event
 async def on_ready():
-    print("Logged in as "+str(bot.user.name))
+    print(f"-----\nLogged in as: {bot.user.name} : {bot.user.id}\n-----\nMy current prefix is: -\n-----")
 
 
 @bot.event
@@ -48,6 +48,7 @@ async def on_raw_reaction_add(payload):
 @bot.command()
 async def testing(ctx: commands.Context):
     await ctx.send("I hate my life!")
+
 
 
 bot.run(secrets.OPEN_SOURCE_TOKEN)
