@@ -46,6 +46,16 @@ bot.colors = {
 }
 bot.color_list = [c for c in bot.colors.values()]
 
+# List of blocked channels for source & channels commands
+blocked_channels = {
+    'Text', 'Voice Channels', 'soulstorm-mods',
+    'Room1', 'Room2', 'Warhammer Archives', 'файло-помойка',
+    'AFK', 'system', 'Solutions & Suggestions', 'suggestions',
+    'exercise-discussions', 'thanks-ivan-kuzmin', 'shortcuts',
+    'memes', 'ca-homework', 'trash-can', 'welcome', 'mod_channel',
+    'fop-solutions', 'ca-solutions', 'ds-solutions', 'main'
+}
+
 
 @bot.event
 async def on_ready():
@@ -152,6 +162,43 @@ async def vc(ctx):
     A simple command which says hi to the author.
     """
     await ctx.send("<#636965781208432651>")
+
+
+@bot.command(description="Send information to specific channel.\nTakes 3 arguments: information,channel,title (always wrap in quotation marks)")
+async def source(ctx: commands.Context, info, chan, topic):
+    if chan not in blocked_channels:
+        embed = discord.Embed(title=topic, description='\uFEFF',
+                              colour=ctx.author.colour, timestamp=ctx.message.created_at)
+        embed.add_field(name="Information", value=info)
+        guild = bot.get_guild(636962982286589952)
+        for channel in guild.channels:
+            if channel.name == chan:
+                await channel.send(embed=embed)
+                return
+        await ctx.send("Channel not found!")
+    else:
+        await ctx.send("You are not able to write messages in " + chan + " channel!")
+
+
+@source.error
+async def source_error(ctx, error):
+    """
+    Whenever member uses command without arguments
+    """
+    if isinstance(error, commands.UserInputError):
+        await ctx.send("Add missing arguments!")
+    else:
+        raise error
+
+
+@bot.command(aliases=['channels'], description="Prints all available channels")
+async def get_channels(ctx):
+    output = "**Channels list:**\n|"
+    guild = bot.get_guild(636962982286589952)
+    for channel in guild.channels:
+        if channel.name not in blocked_channels:
+            output += channel.name+"|"
+    await ctx.send(output)
 
 
 @bot.command(name="help", description="Returns all available commands")
