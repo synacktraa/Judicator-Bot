@@ -7,6 +7,30 @@ intents = discord.Intents.all()
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
+bot.version = '1'
+
+bot.colors = {
+  'WHITE': 0xFFFFFF,
+  'AQUA': 0x1ABC9C,
+  'GREEN': 0x2ECC71,
+  'BLUE': 0x3498DB,
+  'PURPLE': 0x9B59B6,
+  'LUMINOUS_VIVID_PINK': 0xE91E63,
+  'GOLD': 0xF1C40F,
+  'ORANGE': 0xE67E22,
+  'RED': 0xE74C3C,
+  'NAVY': 0x34495E,
+  'DARK_AQUA': 0x11806A,
+  'DARK_GREEN': 0x1F8B4C,
+  'DARK_BLUE': 0x206694,
+  'DARK_PURPLE': 0x71368A,
+  'DARK_VIVID_PINK': 0xAD1457,
+  'DARK_GOLD': 0xC27C0E,
+  'DARK_ORANGE': 0xA84300,
+  'DARK_RED': 0x992D22,
+  'DARK_NAVY': 0x2C3E50
+}
+bot.color_list = [c for c in bot.colors.values()]
 
 @bot.event
 async def on_ready():
@@ -98,5 +122,18 @@ async def stats(ctx):
     embed.set_author(name=bot.user.name, icon_url=bot.user.avatar_url)
 
     await ctx.send(embed=embed)
+
+@bot.event
+async def on_message(message):
+    #Ignore messages sent by yourself
+    if message.author.id == bot.user.id:
+        return
+    #Whenever the bot is tagged, respond with its prefix
+    if f"<@!{947961087523962970}>" in message.content:
+        prefix = '!'
+        prefixMsg = await message.channel.send(f"My prefix here is `{prefix}`")
+        await prefixMsg.add_reaction('👀')
+    await bot.process_commands(message)
+
 
 bot.run(secrets.OPEN_SOURCE_TOKEN)
