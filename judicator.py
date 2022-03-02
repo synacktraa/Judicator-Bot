@@ -1,13 +1,31 @@
 import discord
 import secrets
+from discord.ext import commands
+from discord import Game
 
-class MyClient(discord.Client):
-    async def on_ready(self):
-        print('Logged on as {0}!'.format(self.user))
+intents = discord.Intents.all()
 
+help_command = commands.DefaultHelpCommand(
+    no_category='Commands'
+)
+
+bot = commands.Bot(command_prefix='!', description='Testing Commands',
+                   help_command=help_command, intents=intents)
+
+
+@bot.command()
+async def testing(ctx: commands.Context):
+    await ctx.send("I hate my life!")
+
+
+@bot.event
+async def on_ready():
+    print("Logged in as "+str(bot.user.name))
+
+
+class MyBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
         # ID of the message that can be reacted to to add/remove a role.
         self.role_message_id = 947968073070161980
         self.emoji_to_role = {
@@ -17,6 +35,7 @@ class MyClient(discord.Client):
             discord.PartialEmoji(name='❎'): 936351416430256128,
         }
 
+    @bot.event
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
         """Gives a role based on a reaction emoji."""
         # Make sure that the message the user is reacting to is the one we care about.
@@ -47,7 +66,4 @@ class MyClient(discord.Client):
             pass
 
 
-intents = discord.Intents.all()
-
-client = MyClient(intents=intents)
-client.run(secrets.OPEN_SOURCE_TOKEN)
+bot.run(secrets.OPEN_SOURCE_TOKEN)
