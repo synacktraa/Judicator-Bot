@@ -104,18 +104,18 @@ async def stats(ctx):
     """
     A usefull command that displays bot statistics.
     """
-    pythonVersion = platform.python_version()
-    dpyVersion = discord.__version__
-    serverCount = len(bot.guilds)
-    memberCount = len(set(bot.get_all_members()))
+    python_version = platform.python_version()
+    dpy_version = discord.__version__
+    server_count = len(bot.guilds)
+    member_count = len(set(bot.get_all_members()))
 
     embed = discord.Embed(title=f'{bot.user.name} Stats', description='\uFEFF', colour=ctx.author.colour, timestamp=ctx.message.created_at)
 
     #embed.add_field(name='Bot Version:', value=bot.version)
-    embed.add_field(name='Python Version:', value=pythonVersion)
-    embed.add_field(name='Discord.Py Version', value=dpyVersion)
-    embed.add_field(name='Total Guilds:', value=serverCount)
-    embed.add_field(name='Total Users:', value=memberCount)
+    embed.add_field(name='Python Version:', value=python_version)
+    embed.add_field(name='Discord.Py Version', value=dpy_version)
+    embed.add_field(name='Total Guilds:', value=server_count)
+    embed.add_field(name='Total Users:', value=member_count)
     embed.add_field(name='Bot Developers:', value="<@503505263119040522>,<@453579828281475084>")
 
     embed.set_footer(text=f"{bot.user.name}")
