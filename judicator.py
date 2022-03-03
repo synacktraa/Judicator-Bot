@@ -53,7 +53,7 @@ blocked_channels = {
     'AFK', 'system', 'Solutions & Suggestions', 'suggestions',
     'exercise-discussions', 'thanks-ivan-kuzmin', 'shortcuts',
     'memes', 'ca-homework', 'trash-can', 'welcome', 'mod_channel',
-    'fop-solutions', 'ca-solutions', 'ds-solutions', 'main'
+    'fop-solutions', 'ca-solutions', 'ds-solutions', 'main','test'
 }
 
 
