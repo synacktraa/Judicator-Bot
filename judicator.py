@@ -173,10 +173,13 @@ async def source(ctx: commands.Context, info, chan, topic):
         guild = bot.get_guild(636962982286589952)
         for channel in guild.channels:
             if channel.name == chan:
+                await ctx.message.delete()
                 await channel.send(embed=embed)
                 return
+        await ctx.message.delete()
         await ctx.send("Channel not found!")
     else:
+        await ctx.message.delete()
         await ctx.send("You are not able to write messages in " + chan + " channel!")
 
 
