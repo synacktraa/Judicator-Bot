@@ -242,13 +242,6 @@ async def stats(ctx):
     await ctx.send(embed=embed)
 
 
-@bot.command(name='vc', aliases=['voicechat'], description="Sends voice channel")
-async def vc(ctx):
-    """
-    A simple command which says hi to the author.
-    """
-    await ctx.send("<#636965781208432651>")
-
 
 @bot.command(description="Send information to specific channel.\nTakes 3 arguments: information,channel,title (always wrap in quotation marks)")
 async def source(ctx: commands.Context, info, chan, topic):
