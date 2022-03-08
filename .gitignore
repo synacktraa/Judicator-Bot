@@ -2,3 +2,4 @@ _pycache_
 secrets.cpython-310.pyc
 .secrets_store.json
 secrets.cpython-39.pyc
+lists.cpython-310.pyc
