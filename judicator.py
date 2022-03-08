@@ -54,29 +54,29 @@ blocked_channels = {
     'AFK', 'system', 'Solutions & Suggestions', 'suggestions',
     'exercise-discussions', 'thanks-ivan-kuzmin', 'shortcuts',
     'memes', 'ca-homework', 'trash-can', 'welcome', 'mod_channel',
-    'fop-solutions', 'ca-solutions', 'ds-solutions', 'main','test'
+    'fop-solutions', 'ca-solutions', 'ds-solutions', 'main', 'test'
 }
 
-def emend(message, pattern, intent): 
 
+def emend(message, pattern, intent):
     """
         A recursive function which loops through the message and checks for censored words until it is free of censored words
     """
     censor = pattern
-    vowels = ['a','e','i','o','u','A','E','I','O','U']
+    vowels = ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U']
 
-    for char in censor: #replacing the vowels with an ascii character.
+    for char in censor:  # replacing the vowels with an ascii character.
         for v in vowels:
             if char == v:
                 censor = censor.replace(char, '\*')
 
-    edited = message.replace(pattern, censor)     
+    edited = message.replace(pattern, censor)
 
     for pattern in intent:
         if pattern in edited:
             return emend(edited, pattern, intent)
 
-    return edited  
+    return edited
 
 
 @bot.event
@@ -118,31 +118,33 @@ async def on_raw_reaction_add(payload):
 
 
 @bot.event
-async def on_message(message): 
-    
+async def on_message(message: discord.Message):
+
     """
         Checks for users messages.
     """
 
-    if message.author == (bot.user or message.author.bot): 
+    if message.author == (bot.user or message.author.bot):
         return
-    
+
     possibilities = json.loads(open("possibilities.json").read())
 
-    msg = message.content #setting the msg variable to message content
-    channel = message.channel #channel variable to name of the channel in which message was sent
-    author = message.author.name
-    
-    try:
-        await bot.process_commands(message) 
+    msg = message.content  # setting the msg variable to message content
+    # channel variable to name of the channel in which message was sent
+    channel = message.channel
 
-        for intent in possibilities['intents']: #loops through the intents of possiblities json file 
-            intent_dump = intent['censor'] 
-            for pattern in intent_dump: 
-                if pattern in msg: 
-                    outcome = emend(msg, pattern, intent_dump) 
-                    await message.delete() #bot deletes the message which contains the censored message
-                    await channel.send(f"[{author}]| {outcome}") #bot sends the edited message with the author name
+    try:
+        await bot.process_commands(message)
+
+        # loops through the intents of possiblities json file
+        for intent in possibilities['intents']:
+            intent_dump = intent['censor']
+            for pattern in intent_dump:
+                if pattern in msg:
+                    outcome = emend(msg, pattern, intent_dump)
+                    await message.delete()  # bot deletes the message which contains the censored message
+                    # bot sends the edited message with the author name
+                    await channel.send(message.author.mention + f" **├─**Please be polite**─┤** {outcome} ")
 
         """
             bot.process_commands processes the commands that have been registered to the bot and other groups. 
@@ -150,10 +152,10 @@ async def on_message(message):
         """
 
     except discord.errors.NotFound:
-            return
+        return
 
     except discord.ext.commands.errors.CommandNotFound:
-            return
+        return
 
 
 @bot.command(description="Ping-Pong game")
@@ -171,23 +173,24 @@ async def _hi(ctx):
 
 @bot.command(aliases=['delete', 'purge'], description="Deletes the channels' message")
 @commands.is_owner()
-async def clear(ctx, lim: int): 
+async def clear(ctx, lim: int):
     """
     this user defined bot function deletes the no. of messages provided by owner. Usage $clear <no.>
     """
-    await ctx.channel.purge(limit=lim+1) 
+    await ctx.channel.purge(limit=lim+1)
 
-@clear.error 
-async def clear_error(ctx, error): 
+
+@clear.error
+async def clear_error(ctx, error):
     """
     this function checks for error in the $clear command
     """
-    
-    if isinstance(error, commands.MissingRequiredArgument): 
-        #checks if an argument is missing
+
+    if isinstance(error, commands.MissingRequiredArgument):
+        # checks if an argument is missing
         await ctx.send("Usage: $clear <int>")
-    elif isinstance(error, commands.BadArgument): 
-        #checks if the argument is integer value
+    elif isinstance(error, commands.BadArgument):
+        # checks if the argument is integer value
         await ctx.send("Usage: $clear <int_val>")
     elif isinstance(error, commands.CheckFailure):
         await ctx.send("Hey! You lack permission to use this command as you do not own the bot.")
@@ -203,6 +206,7 @@ async def logout(ctx):
     """
     await ctx.send(f"Hey {ctx.author.mention}, I am now logging out :wave:")
     await bot.logout()
+
 
 @logout.error
 async def logout_error(ctx, error):
@@ -242,7 +246,6 @@ async def stats(ctx):
     await ctx.send(embed=embed)
 
 
-
 @bot.command(description="Send information to specific channel.\nTakes 3 arguments: information,channel,title (always wrap in quotation marks)")
 async def source(ctx: commands.Context, info, chan, topic):
     if chan not in blocked_channels:
@@ -260,6 +263,7 @@ async def source(ctx: commands.Context, info, chan, topic):
     else:
         await ctx.message.delete()
         await ctx.send("You are not able to write messages in " + chan + " channel!")
+
 
 @source.error
 async def source_error(ctx, error):
