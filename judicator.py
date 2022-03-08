@@ -1,7 +1,7 @@
 import discord
 import secrets
 import random
-import platform  # For stats
+import platform
 import re
 import lists
 from discord.ext import commands
@@ -31,8 +31,7 @@ bot.color_list = [c for c in bot.colors.values()]
 
 def censoring(message, patterns):
     """
-        A recursive function which loops through the message and 
-        checks for censored words until it is free of censored words
+        Censors all cursed words in string
     """
     edited = message
     for pattern in patterns:
@@ -102,20 +101,17 @@ async def on_message(message: discord.Message):
     if message.author == (bot.user or message.author.bot):
         return
 
-    msg = message.content  # setting the msg variable to message content
-    # channel variable to name of the channel in which message was sent
+    msg = message.content
     channel = message.channel
 
     try:
         await bot.process_commands(message)
-        """
-            bot.process_commands processes the commands that have been registered to the bot and other groups. 
+        """ 
             Without this coroutine, none of the commands will be triggered.
         """
-        # loops through the intents of possiblities json file
         patterns = lists.CENSORED
         outcome = censoring(msg, patterns)
-        # bot deletes the message which contains the censored message & sends the edited message with the author name
+        # Check if message was censored then do something
         if outcome == msg:
             pass
         else:
@@ -137,7 +133,7 @@ async def ping(ctx: commands.Context):
 @bot.command(name='hi', aliases=['hello', 'yo'], description="Greets the user")
 async def _hi(ctx):
     """
-    A simple command which says hi to the author.
+        A simple command which says hi to the author.
     """
     await ctx.send(f"Hi {ctx.author.mention}!")
 
@@ -146,7 +142,7 @@ async def _hi(ctx):
 @commands.is_owner()
 async def clear(ctx, lim: int):
     """
-    this user defined bot function deletes the no. of messages provided by owner. Usage $clear <no.>
+        Deletes number of messages specified by user
     """
     await ctx.channel.purge(limit=lim+1)
 
@@ -154,7 +150,7 @@ async def clear(ctx, lim: int):
 @clear.error
 async def clear_error(ctx, error):
     """
-    this function checks for error in the $clear command
+        Error handler for cleaning function
     """
 
     if isinstance(error, commands.MissingRequiredArgument):
@@ -173,7 +169,7 @@ async def clear_error(ctx, error):
 @commands.is_owner()
 async def logout(ctx):
     """
-    If the user running the command owns the bot then this will disconnect the bot from discord.
+        If the user running the command owns the bot then this will disconnect the bot from discord.
     """
     await ctx.send(f"Hey {ctx.author.mention}, I am now logging out :wave:")
     await bot.logout()
@@ -182,7 +178,7 @@ async def logout(ctx):
 @logout.error
 async def logout_error(ctx, error):
     """
-    Whenever the logout command has an error this will be tripped.
+        Whenever the logout command has an error this will be tripped.
     """
     if isinstance(error, commands.CheckFailure):
         await ctx.send("Hey! You lack permission to use this command as you do not own the bot.")
@@ -193,7 +189,7 @@ async def logout_error(ctx, error):
 @bot.command(description="Shows bot information")
 async def stats(ctx):
     """
-    A usefull command that displays bot statistics.
+        A usefull command that displays bot statistics.
     """
     python_version = platform.python_version()
     dpy_version = discord.__version__
@@ -203,7 +199,6 @@ async def stats(ctx):
     embed = discord.Embed(title=f'{bot.user.name} Stats', description='\uFEFF',
                           colour=ctx.author.colour, timestamp=ctx.message.created_at)
 
-    # embed.add_field(name='Bot Version:', value=bot.version)
     embed.add_field(name='Python Version:', value=python_version)
     embed.add_field(name='Discord.Py Version', value=dpy_version)
     embed.add_field(name='Total Guilds:', value=server_count)
@@ -239,7 +234,7 @@ async def source(ctx: commands.Context, info, chan, topic):
 @source.error
 async def source_error(ctx, error):
     """
-    Whenever member uses command without arguments
+        Whenever member uses command without arguments
     """
     if isinstance(error, commands.UserInputError):
         await ctx.send("Add missing arguments!")
