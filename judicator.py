@@ -33,7 +33,7 @@ def censoring(message, patterns):
     """
         Censors all cursed words in string
     """
-    edited = message
+    edited = message.lower()
     for pattern in patterns:
         if pattern in edited:
             regex_pattern = r"\b"+re.escape(pattern)+r"\b"
@@ -51,7 +51,7 @@ def censor(pattern):
     for char in temp:
         for v in vowels:
             if char == v:
-                temp = temp.replace(char, '\*')
+                temp = temp.replace(char, '▓')
     return temp
 
 
@@ -112,11 +112,11 @@ async def on_message(message: discord.Message):
         patterns = lists.CENSORED
         outcome = censoring(msg, patterns)
         # Check if message was censored then do something
-        if outcome == msg:
-            pass
-        else:
+        if "▓" in outcome:
             await message.delete()
             await channel.send(message.author.mention + f" Censored: {outcome} ")
+        else:
+            pass
 
     except discord.errors.NotFound:
         return
@@ -138,7 +138,7 @@ async def _hi(ctx):
     await ctx.send(f"Hi {ctx.author.mention}!")
 
 
-@bot.command(aliases=['delete', 'purge'], description="Deletes the channels' message")
+@bot.command(aliases=['delete', 'purge'], description="Deletes the messages from channel")
 @commands.is_owner()
 async def clear(ctx, lim: int):
     """
