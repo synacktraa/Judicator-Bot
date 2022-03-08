@@ -3,6 +3,7 @@ import secrets
 import random
 from discord.ext import commands
 import platform  # For stats
+import json
 
 intents = discord.Intents.all()
 
@@ -56,6 +57,27 @@ blocked_channels = {
     'fop-solutions', 'ca-solutions', 'ds-solutions', 'main','test'
 }
 
+def emend(message, pattern, intent): 
+
+    """
+        A recursive function which loops through the message and checks for censored words until it is free of censored words
+    """
+    censor = pattern
+    vowels = ['a','e','i','o','u','A','E','I','O','U']
+
+    for char in censor: #replacing the vowels with an ascii character.
+        for v in vowels:
+            if char == v:
+                censor = censor.replace(char, '\*')
+
+    edited = message.replace(pattern, censor)     
+
+    for pattern in intent:
+        if pattern in edited:
+            return emend(edited, pattern, intent)
+
+    return edited  
+
 
 @bot.event
 async def on_ready():
@@ -95,6 +117,45 @@ async def on_raw_reaction_add(payload):
         pass
 
 
+@bot.event
+async def on_message(message): 
+    
+    """
+        Checks for users messages.
+    """
+
+    if message.author == (bot.user or message.author.bot): 
+        return
+    
+    possibilities = json.loads(open("possibilities.json").read())
+
+    msg = message.content #setting the msg variable to message content
+    channel = message.channel #channel variable to name of the channel in which message was sent
+    author = message.author.name
+    
+    try:
+        await bot.process_commands(message) 
+
+        for intent in possibilities['intents']: #loops through the intents of possiblities json file 
+            intent_dump = intent['censor'] 
+            for pattern in intent_dump: 
+                if pattern in msg: 
+                    outcome = emend(msg, pattern, intent_dump) 
+                    await message.delete() #bot deletes the message which contains the censored message
+                    await channel.send(f"[{author}]| {outcome}") #bot sends the edited message with the author name
+
+        """
+            bot.process_commands processes the commands that have been registered to the bot and other groups. 
+            Without this coroutine, none of the commands will be triggered.
+        """
+
+    except discord.errors.NotFound:
+            return
+
+    except discord.ext.commands.errors.CommandNotFound:
+            return
+
+
 @bot.command(description="Ping-Pong game")
 async def ping(ctx: commands.Context):
     await ctx.send("Pong! {0} ms".format(random.randrange(0, 1000)))
@@ -106,6 +167,7 @@ async def _hi(ctx):
     A simple command which says hi to the author.
     """
     await ctx.send(f"Hi {ctx.author.mention}!")
+
 
 @bot.command(aliases=['delete', 'purge'], description="Deletes the channels' message")
 @commands.is_owner()
@@ -132,6 +194,7 @@ async def clear_error(ctx, error):
     else:
         raise error
 
+
 @bot.command(aliases=['disconnect', 'close', 'stopbot'], description="Turns off the bot")
 @commands.is_owner()
 async def logout(ctx):
@@ -140,7 +203,6 @@ async def logout(ctx):
     """
     await ctx.send(f"Hey {ctx.author.mention}, I am now logging out :wave:")
     await bot.logout()
-
 
 @logout.error
 async def logout_error(ctx, error):
@@ -206,7 +268,6 @@ async def source(ctx: commands.Context, info, chan, topic):
         await ctx.message.delete()
         await ctx.send("You are not able to write messages in " + chan + " channel!")
 
-
 @source.error
 async def source_error(ctx, error):
     """
@@ -235,5 +296,6 @@ async def help(ctx: commands.Context):
     for command in bot.commands:
         embed.add_field(name=f"{command}", value=command.description)
     await ctx.send(embed=embed)
+
 
 bot.run(secrets.OPEN_SOURCE_TOKEN)
