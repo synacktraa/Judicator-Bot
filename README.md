@@ -4,6 +4,7 @@
 ## Functionality
  - Gives user a role according to his reaction on specified message.
  - Sends styled message to specified resource channel.
+ - Buttons interactions. (In developing)
 
 ## Commands
  - Command prefix for this bot is - !
