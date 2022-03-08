@@ -1,13 +1,14 @@
 import discord
 import secrets
 import random
-from discord.ext import commands
 import platform  # For stats
-import json
+import re
+import lists
+from discord.ext import commands
 
 intents = discord.Intents.all()
 
-"""Different bot activities"""
+#Bot activities
 name_constant = "!help"
 game_activity = discord.Game(name=name_constant)
 streaming_activity = discord.Streaming(
@@ -22,61 +23,33 @@ bot = commands.Bot(command_prefix='!', intents=intents,
 # Choose one of the activities
 bot.activity = game_activity
 
-bot.version = '1'
+bot.version = '1.5'
 
-bot.colors = {
-    'WHITE': 0xFFFFFF,
-    'AQUA': 0x1ABC9C,
-    'GREEN': 0x2ECC71,
-    'BLUE': 0x3498DB,
-    'PURPLE': 0x9B59B6,
-    'LUMINOUS_VIVID_PINK': 0xE91E63,
-    'GOLD': 0xF1C40F,
-    'ORANGE': 0xE67E22,
-    'RED': 0xE74C3C,
-    'NAVY': 0x34495E,
-    'DARK_AQUA': 0x11806A,
-    'DARK_GREEN': 0x1F8B4C,
-    'DARK_BLUE': 0x206694,
-    'DARK_PURPLE': 0x71368A,
-    'DARK_VIVID_PINK': 0xAD1457,
-    'DARK_GOLD': 0xC27C0E,
-    'DARK_ORANGE': 0xA84300,
-    'DARK_RED': 0x992D22,
-    'DARK_NAVY': 0x2C3E50
-}
+bot.colors = lists.BOT_COLORS
 bot.color_list = [c for c in bot.colors.values()]
 
-# List of blocked channels for source & channels commands
-blocked_channels = {
-    'Text', 'Voice Channels', 'soulstorm-mods',
-    'Room1', 'Room2', 'Warhammer Archives', 'файло-помойка',
-    'AFK', 'system', 'Solutions & Suggestions', 'suggestions',
-    'exercise-discussions', 'thanks-ivan-kuzmin', 'shortcuts',
-    'memes', 'ca-homework', 'trash-can', 'welcome', 'mod_channel',
-    'fop-solutions', 'ca-solutions', 'ds-solutions', 'main', 'test'
-}
 
-
-def emend(message, pattern, intent):
+def censoring(message, patterns):
     """
-        A recursive function which loops through the message and checks for censored words until it is free of censored words
+        A recursive function which loops through the message and 
+        checks for censored words until it is free of censored words
     """
-    censor = pattern
-    vowels = ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U']
-
-    for char in censor:  # replacing the vowels with an ascii character.
-        for v in vowels:
-            if char == v:
-                censor = censor.replace(char, '\*')
-
-    edited = message.replace(pattern, censor)
-
-    for pattern in intent:
-        if pattern in edited:
-            return emend(edited, pattern, intent)
+    for pattern in patterns:
+        edited = re.sub(r'\b{0}\b'.format(pattern),
+                        f'{censor(pattern)}', message)
 
     return edited
+
+
+def censor(pattern):
+    temp = pattern
+    vowels = ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U']
+    # replacing the vowels with an ascii character.
+    for char in temp:
+        for v in vowels:
+            if char == v:
+                temp = temp.replace(char, '\*')
+    return temp
 
 
 @bot.event
@@ -119,15 +92,11 @@ async def on_raw_reaction_add(payload):
 
 @bot.event
 async def on_message(message: discord.Message):
-
     """
         Checks for users messages.
     """
-
     if message.author == (bot.user or message.author.bot):
         return
-
-    possibilities = json.loads(open("possibilities.json").read())
 
     msg = message.content  # setting the msg variable to message content
     # channel variable to name of the channel in which message was sent
@@ -135,21 +104,19 @@ async def on_message(message: discord.Message):
 
     try:
         await bot.process_commands(message)
-
-        # loops through the intents of possiblities json file
-        for intent in possibilities['intents']:
-            intent_dump = intent['censor']
-            for pattern in intent_dump:
-                if pattern in msg:
-                    outcome = emend(msg, pattern, intent_dump)
-                    await message.delete()  # bot deletes the message which contains the censored message
-                    # bot sends the edited message with the author name
-                    await channel.send(message.author.mention + f" **├─**Please be polite**─┤** {outcome} ")
-
         """
             bot.process_commands processes the commands that have been registered to the bot and other groups. 
             Without this coroutine, none of the commands will be triggered.
         """
+        # loops through the intents of possiblities json file
+        patterns = lists.CENSORED
+        outcome = censoring(msg, patterns)
+        # bot deletes the message which contains the censored message & sends the edited message with the author name
+        if outcome == msg:
+            pass
+        else:
+            await message.delete()
+            await channel.send(message.author.mention + f" Censored: {outcome} ")
 
     except discord.errors.NotFound:
         return
@@ -232,7 +199,7 @@ async def stats(ctx):
     embed = discord.Embed(title=f'{bot.user.name} Stats', description='\uFEFF',
                           colour=ctx.author.colour, timestamp=ctx.message.created_at)
 
-    #embed.add_field(name='Bot Version:', value=bot.version)
+    # embed.add_field(name='Bot Version:', value=bot.version)
     embed.add_field(name='Python Version:', value=python_version)
     embed.add_field(name='Discord.Py Version', value=dpy_version)
     embed.add_field(name='Total Guilds:', value=server_count)
@@ -248,7 +215,7 @@ async def stats(ctx):
 
 @bot.command(description="Send information to specific channel.\nTakes 3 arguments: information,channel,title (always wrap in quotation marks)")
 async def source(ctx: commands.Context, info, chan, topic):
-    if chan not in blocked_channels:
+    if chan not in lists.BLOCKED_CHANNELS:
         embed = discord.Embed(title=topic, description='\uFEFF',
                               colour=ctx.author.colour, timestamp=ctx.message.created_at)
         embed.add_field(name="Information", value=info)
@@ -281,7 +248,7 @@ async def get_channels(ctx):
     output = "**Channels list:**\n|"
     guild = bot.get_guild(636962982286589952)
     for channel in guild.channels:
-        if channel.name not in blocked_channels:
+        if channel.name not in lists.BLOCKED_CHANNELS:
             output += channel.name+"|"
     await ctx.send(output)
 
