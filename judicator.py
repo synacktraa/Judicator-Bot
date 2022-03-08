@@ -8,7 +8,7 @@ from discord.ext import commands
 
 intents = discord.Intents.all()
 
-#Bot activities
+# Bot activities
 name_constant = "!help"
 game_activity = discord.Game(name=name_constant)
 streaming_activity = discord.Streaming(
@@ -34,9 +34,13 @@ def censoring(message, patterns):
         A recursive function which loops through the message and 
         checks for censored words until it is free of censored words
     """
+    edited = message
     for pattern in patterns:
-        edited = re.sub(r'\b{0}\b'.format(pattern),
-                        f'{censor(pattern)}', message)
+        if pattern in edited:
+            regex_pattern = r"\b"+re.escape(pattern)+r"\b"
+            edited = re.sub(regex_pattern, censor(pattern), edited)
+        else:
+            pass
 
     return edited
 
@@ -123,6 +127,13 @@ async def on_message(message: discord.Message):
 
     except discord.ext.commands.errors.CommandNotFound:
         return
+
+
+def len(text):
+    counter = 0
+    for c in text:
+        counter += 1
+    return counter
 
 
 @bot.command(description="Ping-Pong game")
