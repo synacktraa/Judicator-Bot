@@ -15,3 +15,4 @@
  - !stats | Shows the detailed information about bot.
  - !source | Sends message in block to specific channel, takes 3 arguments: information,channel,title. Make sure to put them in "".
  - !channels | Shows available channels for source command.
+ - !delete <int> | deletes the n number of messages.

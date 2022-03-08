@@ -107,6 +107,30 @@ async def _hi(ctx):
     """
     await ctx.send(f"Hi {ctx.author.mention}!")
 
+@bot.command(aliases=['delete', 'purge'], description="Deletes the channels' message")
+@commands.is_owner()
+async def clear(ctx, lim: int): 
+    """
+    this user defined bot function deletes the no. of messages provided by owner. Usage $clear <no.>
+    """
+    await ctx.channel.purge(limit=lim+1) 
+
+@clear.error 
+async def clear_error(ctx, error): 
+    """
+    this function checks for error in the $clear command
+    """
+    
+    if isinstance(error, commands.MissingRequiredArgument): 
+        #checks if an argument is missing
+        await ctx.send("Usage: $clear <int>")
+    elif isinstance(error, commands.BadArgument): 
+        #checks if the argument is integer value
+        await ctx.send("Usage: $clear <int_val>")
+    elif isinstance(error, commands.CheckFailure):
+        await ctx.send("Hey! You lack permission to use this command as you do not own the bot.")
+    else:
+        raise error
 
 @bot.command(aliases=['disconnect', 'close', 'stopbot'], description="Turns off the bot")
 @commands.is_owner()
