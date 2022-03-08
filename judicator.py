@@ -129,13 +129,6 @@ async def on_message(message: discord.Message):
         return
 
 
-def len(text):
-    counter = 0
-    for c in text:
-        counter += 1
-    return counter
-
-
 @bot.command(description="Ping-Pong game")
 async def ping(ctx: commands.Context):
     await ctx.send("Pong! {0} ms".format(random.randrange(0, 1000)))
