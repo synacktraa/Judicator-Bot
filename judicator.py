@@ -51,7 +51,7 @@ def censor(pattern):
     for char in temp:
         for v in vowels:
             if char == v:
-                temp = temp.replace(char, '▓')
+                temp = temp.replace(char, '─')
     return temp
 
 
@@ -112,7 +112,7 @@ async def on_message(message: discord.Message):
         patterns = lists.CENSORED
         outcome = censoring(msg, patterns)
         # Check if message was censored then do something
-        if "▓" in outcome:
+        if "─" in outcome:
             await message.delete()
             await channel.send(message.author.mention + f" Censored: {outcome} ")
         else:
