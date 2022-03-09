@@ -5,11 +5,12 @@ import platform
 import re
 import lists
 from discord.ext import commands
+from discord.commands import Option
 
 intents = discord.Intents.all()
 
 # Bot activities
-name_constant = "!help"
+name_constant = "/help"
 game_activity = discord.Game(name=name_constant)
 streaming_activity = discord.Streaming(
     name=name_constant, url="https://www.twitch.tv")
@@ -18,12 +19,13 @@ listeting_activity = discord.Activity(
 watching_activity = discord.Activity(
     type=discord.ActivityType.watching, name=name_constant)
 
-bot = commands.Bot(command_prefix='!', intents=intents,
-                   status=discord.Status.online, help_command=None)
+bot = commands.Bot(
+    intents=intents, status=discord.Status.online, help_command=None)
+
 # Choose one of the activities
 bot.activity = game_activity
 
-bot.version = '1.5'
+bot.version = '2.0'
 
 bot.colors = lists.BOT_COLORS
 bot.color_list = [c for c in bot.colors.values()]
@@ -58,7 +60,7 @@ def censor(pattern):
 @bot.event
 async def on_ready():
     print(
-        f"-----\nLogged in as: {bot.user.name} : {bot.user.id}\n-----\nMy current prefix is: !\n-----\nMy current activity:{bot.activity}\n-----")
+        f"-----\nLogged in as: {bot.user.name} : {bot.user.id}\n-----\nMy current activity:{bot.activity}\n-----")
 
 
 @bot.event
@@ -105,7 +107,7 @@ async def on_message(message: discord.Message):
     channel = message.channel
 
     try:
-        await bot.process_commands(message)
+        await bot.process_application_commands(message)
         """ 
             Without this coroutine, none of the commands will be triggered.
         """
@@ -125,30 +127,34 @@ async def on_message(message: discord.Message):
         return
 
 
-@bot.command(description="Ping-Pong game")
-async def ping(ctx: commands.Context):
-    await ctx.send("Pong! {0} ms".format(random.randrange(0, 1000)))
+@bot.slash_command(description="Ping-Pong game", guild_ids=[636962982286589952])
+async def ping(ctx: discord.ApplicationContext):
+    await ctx.respond(f"Pong! {random.randrange(0, 1000)} ms")
 
 
-@bot.command(name='hi', aliases=['hello', 'yo'], description="Greets the user")
-async def _hi(ctx):
+@bot.slash_command(name='hi', aliases=['hello', 'yo'], description="Greets the user", guild_ids=[636962982286589952])
+async def _hi(ctx: discord.ApplicationContext):
     """
         A simple command which says hi to the author.
     """
-    await ctx.send(f"Hi {ctx.author.mention}!")
+    await ctx.respond(f"Hi {ctx.author.mention}!")
 
 
-@bot.command(aliases=['delete', 'purge'], description="Deletes the messages from channel")
+@bot.slash_command(description="Deletes the messages from channel", guild_ids=[636962982286589952])
 @commands.is_owner()
-async def clear(ctx, lim: int):
+async def clear(
+    ctx: discord.ApplicationContext,
+    limit: Option(int, "Enter number of messages")
+):
     """
         Deletes number of messages specified by user
     """
-    await ctx.channel.purge(limit=lim+1)
+    await ctx.channel.purge(limit=limit)
+    await ctx.respond("Channel cleared!")
 
 
 @clear.error
-async def clear_error(ctx, error):
+async def clear_error(ctx: discord.ApplicationContext, error):
     """
         Error handler for cleaning function
     """
@@ -165,18 +171,18 @@ async def clear_error(ctx, error):
         raise error
 
 
-@bot.command(aliases=['disconnect', 'close', 'stopbot'], description="Turns off the bot")
+@bot.slash_command(description="Turns off the bot", guild_ids=[636962982286589952])
 @commands.is_owner()
-async def logout(ctx):
+async def logout(ctx: discord.ApplicationContext):
     """
         If the user running the command owns the bot then this will disconnect the bot from discord.
     """
-    await ctx.send(f"Hey {ctx.author.mention}, I am now logging out :wave:")
-    await bot.logout()
+    await ctx.respond(f"Hey {ctx.author.mention}, I am now logging out :wave:")
+    await bot.close()
 
 
 @logout.error
-async def logout_error(ctx, error):
+async def logout_error(ctx: discord.ApplicationContext, error):
     """
         Whenever the logout command has an error this will be tripped.
     """
@@ -186,8 +192,8 @@ async def logout_error(ctx, error):
         raise error
 
 
-@bot.command(description="Shows bot information")
-async def stats(ctx):
+@bot.slash_command(description="Shows bot information", guild_ids=[636962982286589952])
+async def stats(ctx: discord.ApplicationContext):
     """
         A usefull command that displays bot statistics.
     """
@@ -197,7 +203,7 @@ async def stats(ctx):
     member_count = len(set(bot.get_all_members()))
 
     embed = discord.Embed(title=f'{bot.user.name} Stats', description='\uFEFF',
-                          colour=ctx.author.colour, timestamp=ctx.message.created_at)
+                          colour=ctx.author.colour)
 
     embed.add_field(name='Python Version:', value=python_version)
     embed.add_field(name='Discord.Py Version', value=dpy_version)
@@ -207,58 +213,50 @@ async def stats(ctx):
                     value="<@503505263119040522>,<@453579828281475084>")
 
     embed.set_footer(text=f"{bot.user.name}")
-    embed.set_author(name=bot.user.name, icon_url=bot.user.avatar_url)
+    embed.set_author(name=bot.user.name, icon_url=bot.user.avatar.url)
 
-    await ctx.send(embed=embed)
+    await ctx.respond(embed=embed)
 
 
-@bot.command(description="Send information to specific channel.\nTakes 3 arguments: information,channel,title (always wrap in quotation marks)")
-async def source(ctx: commands.Context, info, chan, topic):
-    if chan not in lists.BLOCKED_CHANNELS:
+@bot.slash_command(description="Sends information to specific channel.", guild_ids=[636962982286589952])
+async def source(
+        ctx: discord.ApplicationContext,
+        info: Option(str, "Enter your information"),
+        chan: Option(discord.TextChannel, "Select a channel"),
+        topic: Option(str, "Enter your title")
+):
+    temp = chan.name
+    if temp not in lists.BLOCKED_CHANNELS:
         embed = discord.Embed(title=topic, description='\uFEFF',
-                              colour=ctx.author.colour, timestamp=ctx.message.created_at)
+                              colour=ctx.author.colour)
         embed.add_field(name="Information", value=info)
         guild = bot.get_guild(636962982286589952)
         for channel in guild.channels:
-            if channel.name == chan:
-                await ctx.message.delete()
-                await channel.send(embed=embed)
+            if channel.name == temp:
+                await channel.respond(embed=embed)
                 return
-        await ctx.message.delete()
-        await ctx.send("Channel not found!")
+        await ctx.respond("Channel not found!")
     else:
-        await ctx.message.delete()
-        await ctx.send("You are not able to write messages in " + chan + " channel!")
+        await ctx.respond("You are not able to write messages in " + temp + " channel!")
 
 
-@source.error
-async def source_error(ctx, error):
-    """
-        Whenever member uses command without arguments
-    """
-    if isinstance(error, commands.UserInputError):
-        await ctx.send("Add missing arguments!")
-    else:
-        raise error
-
-
-@bot.command(aliases=['channels'], description="Prints all available channels")
-async def get_channels(ctx):
+@bot.slash_command(description="Prints all available channels", guild_ids=[636962982286589952])
+async def channels(ctx: discord.ApplicationContext):
     output = "**Channels list:**\n|"
     guild = bot.get_guild(636962982286589952)
     for channel in guild.channels:
         if channel.name not in lists.BLOCKED_CHANNELS:
             output += channel.name+"|"
-    await ctx.send(output)
+    await ctx.respond(output)
 
 
-@bot.command(name="help", description="Returns all available commands")
-async def help(ctx: commands.Context):
+@bot.slash_command(name="help", description="Sends all available commands", guild_ids=[636962982286589952])
+async def help(ctx: discord.ApplicationContext):
     embed = discord.Embed(title=f'Available Commands:', description='\uFEFF',
-                          colour=ctx.author.colour, timestamp=ctx.message.created_at)
-    for command in bot.commands:
+                          colour=ctx.author.colour)
+    for command in bot.application_commands:
         embed.add_field(name=f"{command}", value=command.description)
-    await ctx.send(embed=embed)
+    await ctx.respond(embed=embed)
 
 
 bot.run(secrets.OPEN_SOURCE_TOKEN)
