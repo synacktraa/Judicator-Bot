@@ -102,29 +102,32 @@ async def on_message(message: discord.Message):
     """
     if message.author == (bot.user or message.author.bot):
         return
-
-    msg = message.content
-    channel = message.channel
-
-    try:
-        await bot.process_application_commands(message)
-        """ 
+    
+    # Change to true if you want to enable censorship
+    if lists.CENSORHIP_STATUS:
+        try:
+            msg = message.content
+            channel = message.channel
+            await bot.process_application_commands(message)
+            """ 
             Without this coroutine, none of the commands will be triggered.
-        """
-        patterns = lists.CENSORED
-        outcome = censoring(msg, patterns)
-        # Check if message was censored then do something
-        if "─" in outcome:
-            await message.delete()
-            await channel.send(message.author.mention + f" Censored: {outcome} ")
-        else:
-            pass
+            """
+            patterns = lists.CENSORED
+            outcome = censoring(msg, patterns)
+            # Check if message was censored then do something
+            if "─" in outcome:
+                await message.delete()
+                await channel.send(message.author.mention + f" Censored: {outcome} ")
+            else:
+                pass
 
-    except discord.errors.NotFound:
-        return
+        except discord.errors.NotFound:
+            return
 
-    except discord.ext.commands.errors.CommandNotFound:
-        return
+        except discord.ext.commands.errors.CommandNotFound:
+            return
+    else:
+        pass
 
 
 @bot.slash_command(description="Ping-Pong game", guild_ids=[636962982286589952])
