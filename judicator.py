@@ -233,7 +233,8 @@ async def source(
         guild = bot.get_guild(636962982286589952)
         for channel in guild.channels:
             if channel.name == temp:
-                await channel.respond(embed=embed)
+                await channel.send(embed=embed)
+                await ctx.respond("Message sent!")
                 return
         await ctx.respond("Channel not found!")
     else:
