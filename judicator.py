@@ -2,31 +2,17 @@ import discord
 import secrets
 import random
 import platform
-import lists
+import constants
 from discord.ext import commands
 from discord.commands import Option
 
-intents = discord.Intents.all()
-
-# Bot activities
-name_constant = "/help"
-game_activity = discord.Game(name=name_constant)
-streaming_activity = discord.Streaming(
-    name=name_constant, url="https://www.twitch.tv")
-listeting_activity = discord.Activity(
-    type=discord.ActivityType.listening, name=name_constant)
-watching_activity = discord.Activity(
-    type=discord.ActivityType.watching, name=name_constant)
 
 bot = commands.Bot(
-    intents=intents, status=discord.Status.online, help_command=None)
-
-# Choose one of the activities
-bot.activity = game_activity
-
-bot.version = '2.0'
-
-bot.colors = lists.BOT_COLORS
+    intents=discord.Intents.all(), status=discord.Status.online,
+    help_command=None, activity=constants.ACTIVITIES['GAME'],
+    version='2.0'
+)
+bot.colors = constants.BOT_COLORS
 bot.color_list = [c for c in bot.colors.values()]
 
 
@@ -38,7 +24,9 @@ async def on_ready():
 
 @bot.event
 async def on_raw_reaction_add(payload):
-    """Gives a role based on a reaction emoji."""
+    """
+        Gives a role based on a reaction emoji.
+    """
     # Make sure that the message the user is reacting to is the one we care about.
     if payload.message_id != 947968073070161980:
         return
@@ -77,15 +65,15 @@ async def on_message(message: discord.Message):
     if message.author == (bot.user or message.author.bot):
         return
     # Change to true if you want to enable censorship
-    if lists.CENSORHIP_STATUS:
+    if constants.CENSORHIP_STATUS:
         channel = message.channel
         msg = message.content.lower()
         try:
             await bot.process_application_commands(message)
             """ 
-            Without this coroutine, none of the commands will be triggered.
+                Without this coroutine, none of the commands will be triggered.
             """
-            for string in lists.CENSORED:
+            for string in constants.CENSORED:
                 if string in msg:
                     censor = string
                     for char in censor:
@@ -205,7 +193,7 @@ async def source(
         topic: Option(str, "Enter your title")
 ):
     temp = chan.name
-    if temp not in lists.BLOCKED_CHANNELS:
+    if temp not in constants.BLOCKED_CHANNELS:
         embed = discord.Embed(title=topic, description='\uFEFF',
                               colour=ctx.author.colour)
         embed.add_field(name="Information", value=info)
@@ -225,7 +213,7 @@ async def channels(ctx: discord.ApplicationContext):
     output = "**Channels list:**\n|"
     guild = bot.get_guild(secrets.GUILD_ID)
     for channel in guild.channels:
-        if channel.name not in lists.BLOCKED_CHANNELS:
+        if channel.name not in constants.BLOCKED_CHANNELS:
             output += channel.name+"|"
     await ctx.respond(output)
 

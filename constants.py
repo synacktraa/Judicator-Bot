@@ -1,3 +1,6 @@
+import discord
+
+
 CENSORED = [
     "retard",
     "gay",
@@ -446,3 +449,12 @@ BOT_COLORS = {
 }
 
 CENSORHIP_STATUS = False
+
+HELP = "/help"
+
+ACTIVITIES = {
+    'STREAM': discord.Streaming(name=HELP, url="https://www.twitch.tv"),
+    'SONG': discord.Activity(type=discord.ActivityType.listening, name=HELP),
+    'GAME': discord.Game(name=HELP),
+    'WATCH': discord.Activity(type=discord.ActivityType.watching, name=HELP)
+}
