@@ -3,6 +3,7 @@ import secrets
 import random
 import platform
 import constants
+import utilities
 from discord.ext import commands
 from discord.commands import Option
 
@@ -14,6 +15,7 @@ bot = commands.Bot(
 )
 bot.colors = constants.BOT_COLORS
 bot.color_list = [c for c in bot.colors.values()]
+
 
 @bot.event
 async def on_ready():
@@ -72,7 +74,7 @@ async def on_message(message: discord.Message):
             """ 
                 Without this coroutine, none of the commands will be triggered.
             """
-            
+
             for pattern in constants.CENSORED:
                 if pattern in msg.lower():
                     idx = msg.lower().find(pattern)
@@ -81,7 +83,7 @@ async def on_message(message: discord.Message):
                         for v in vowels:
                             if char == v:
                                 rev_data = rev_data.replace(char, '\*')
-                    msg = constants.replace_ic(msg, pattern, rev_data)
+                    msg = utilities.replace_ic(msg, pattern, rev_data)
             if message.content != msg:
                 await message.delete()
                 await channel.send(message.author.mention + f" Censored: {msg} ")
