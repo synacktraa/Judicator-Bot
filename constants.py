@@ -448,7 +448,7 @@ BOT_COLORS = {
     'DARK_NAVY': 0x2C3E50
 }
 
-CENSORHIP_STATUS = False
+CENSORHIP_STATUS = True
 
 HELP = "/help"
 
