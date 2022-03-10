@@ -86,14 +86,11 @@ async def on_message(message: discord.Message):
         msg = message.content.lower()
 
         try:
-
             await bot.process_application_commands(message)
             """ 
             Without this coroutine, none of the commands will be triggered.
             """
-            patterns = lists.CENSORED
-
-            for string in patterns:
+            for string in lists.CENSORED:
                 if string in msg :
                     censor = string
                     for char in censor:
@@ -147,7 +144,6 @@ async def clear_error(ctx: discord.ApplicationContext, error):
     """
         Error handler for cleaning function
     """
-
     if isinstance(error, commands.MissingRequiredArgument):
         # checks if an argument is missing
         await ctx.send("Usage: $clear <int>")
@@ -198,8 +194,9 @@ async def stats(ctx: discord.ApplicationContext):
     embed.add_field(name='Discord.Py Version', value=dpy_version)
     embed.add_field(name='Total Guilds:', value=server_count)
     embed.add_field(name='Total Users:', value=member_count)
+    embed.add_field(name='Bot owner:',value="<@503505263119040522>")
     embed.add_field(name='Bot Developers:',
-                    value="<@503505263119040522>,<@453579828281475084>")
+                    value="<@503505263119040522>,<@453579828281475084>,<@890664690533957643>")
 
     embed.set_footer(text=f"{bot.user.name}")
     embed.set_author(name=bot.user.name, icon_url=bot.user.avatar.url)
