@@ -2,7 +2,6 @@ import discord
 import secrets
 import random
 import platform
-import re
 import lists
 from discord.ext import commands
 from discord.commands import Option
@@ -29,32 +28,6 @@ bot.version = '2.0'
 
 bot.colors = lists.BOT_COLORS
 bot.color_list = [c for c in bot.colors.values()]
-
-
-def censoring(message, patterns):
-    """
-        Censors all cursed words in string
-    """
-    edited = message.lower()
-    for pattern in patterns:
-        if pattern in edited:
-            regex_pattern = r"\b"+re.escape(pattern)+r"\b"
-            edited = re.sub(regex_pattern, censor(pattern), edited)
-        else:
-            pass
-
-    return edited
-
-
-def censor(pattern):
-    temp = pattern
-    vowels = ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U']
-    # replacing the vowels with an ascii character.
-    for char in temp:
-        for v in vowels:
-            if char == v:
-                temp = temp.replace(char, '─')
-    return temp
 
 
 @bot.event
@@ -97,27 +70,37 @@ async def on_raw_reaction_add(payload):
 
 @bot.event
 async def on_message(message: discord.Message):
+
     """
         Checks for users messages.
     """
+    vowels = ['a','e','i','o','u','A','E','I','O','U']
+
     if message.author == (bot.user or message.author.bot):
         return
 
     # Change to true if you want to enable censorship
     if lists.CENSORHIP_STATUS:
+
+        channel = message.channel
+        msg = message.content.lower()
+
         try:
-            msg = message.content
-            channel = message.channel
             await bot.process_application_commands(message)
             """ 
             Without this coroutine, none of the commands will be triggered.
             """
-            patterns = lists.CENSORED
-            outcome = censoring(msg, patterns)
-            # Check if message was censored then do something
-            if "─" in outcome:
+            for string in lists.CENSORED:
+                if string in msg :
+                    censor = string
+                    for char in censor:
+                        for v in vowels:
+                            if char == v:
+                                censor = censor.replace(char, '─')
+                    msg = msg.replace(string, censor)
+            if '─' in msg:
                 await message.delete()
-                await channel.send(message.author.mention + f" Censored: {outcome} ")
+                await channel.send(message.author.mention + f" Censored: {msg} ")
             else:
                 pass
 
@@ -161,7 +144,6 @@ async def clear_error(ctx: discord.ApplicationContext, error):
     """
         Error handler for cleaning function
     """
-
     if isinstance(error, commands.MissingRequiredArgument):
         # checks if an argument is missing
         await ctx.send("Usage: $clear <int>")
@@ -212,8 +194,9 @@ async def stats(ctx: discord.ApplicationContext):
     embed.add_field(name='Discord.Py Version', value=dpy_version)
     embed.add_field(name='Total Guilds:', value=server_count)
     embed.add_field(name='Total Users:', value=member_count)
+    embed.add_field(name='Bot owner:',value="<@503505263119040522>")
     embed.add_field(name='Bot Developers:',
-                    value="<@503505263119040522>,<@453579828281475084>")
+                    value="<@503505263119040522>,<@453579828281475084>,<@890664690533957643>")
 
     embed.set_footer(text=f"{bot.user.name}")
     embed.set_author(name=bot.user.name, icon_url=bot.user.avatar.url)
