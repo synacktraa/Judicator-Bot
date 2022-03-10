@@ -72,8 +72,8 @@ async def on_message(message: discord.Message):
             """ 
                 Without this coroutine, none of the commands will be triggered.
             """
-            data = constants.CENSORED
-            for pattern in data:
+            
+            for pattern in constants.CENSORED:
                 if pattern in msg.lower():
                     idx = msg.lower().find(pattern)
                     rev_data = msg[idx:idx+len(pattern)]
