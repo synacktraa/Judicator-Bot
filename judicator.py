@@ -83,8 +83,8 @@ async def on_message(message: discord.Message):
     if lists.CENSORHIP_STATUS:
 
         channel = message.channel
-        msg = message.content
-        
+        msg = message.content.lower()
+
         try:
 
             await bot.process_application_commands(message)
@@ -101,8 +101,11 @@ async def on_message(message: discord.Message):
                             if char == v:
                                 censor = censor.replace(char, '─')
                     msg = msg.replace(string, censor)
-            await message.delete()
-            await channel.send(message.author.mention + f" Censored: {msg} ")
+            if '─' in msg:
+                await message.delete()
+                await channel.send(message.author.mention + f" Censored: {msg} ")
+            else:
+                pass
 
         except discord.errors.NotFound:
             return
