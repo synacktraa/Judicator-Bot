@@ -70,28 +70,23 @@ async def on_raw_reaction_add(payload):
 
 @bot.event
 async def on_message(message: discord.Message):
-
     """
         Checks for users messages.
     """
-    vowels = ['a','e','i','o','u','A','E','I','O','U']
-
+    vowels = ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U']
     if message.author == (bot.user or message.author.bot):
         return
-
     # Change to true if you want to enable censorship
     if lists.CENSORHIP_STATUS:
-
         channel = message.channel
         msg = message.content.lower()
-
         try:
             await bot.process_application_commands(message)
             """ 
             Without this coroutine, none of the commands will be triggered.
             """
             for string in lists.CENSORED:
-                if string in msg :
+                if string in msg:
                     censor = string
                     for char in censor:
                         for v in vowels:
@@ -103,10 +98,8 @@ async def on_message(message: discord.Message):
                 await channel.send(message.author.mention + f" Censored: {msg} ")
             else:
                 pass
-
         except discord.errors.NotFound:
             return
-
         except discord.ext.commands.errors.CommandNotFound:
             return
     else:
@@ -194,7 +187,7 @@ async def stats(ctx: discord.ApplicationContext):
     embed.add_field(name='Discord.Py Version', value=dpy_version)
     embed.add_field(name='Total Guilds:', value=server_count)
     embed.add_field(name='Total Users:', value=member_count)
-    embed.add_field(name='Bot owner:',value="<@503505263119040522>")
+    embed.add_field(name='Bot owner:', value="<@503505263119040522>")
     embed.add_field(name='Bot Developers:',
                     value="<@503505263119040522>,<@453579828281475084>,<@890664690533957643>")
 
