@@ -16,6 +16,7 @@ jobs:
         working-directory: ./
         run: |
           sed -i "s/GH_SECRETS_OPEN_SOURCE_TOKEN/${{secrets.OPEN_SOURCE_TOKEN}}/g" secrets.py
+          sed -i "s/GH_SECRETS_GUILD_ID/${{secrets.GUILD_ID}}/g" secrets.py
       - name: Deploy To Heroku
         uses: AkhileshNS/heroku-deploy@v3.12.12
         with:

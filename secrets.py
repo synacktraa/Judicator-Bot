@@ -6,6 +6,7 @@ SECRETS_STORE_PATH = "./.secrets_store.json"
 
 # List of secrets
 OPEN_SOURCE_TOKEN = "GH_SECRETS_OPEN_SOURCE_TOKEN"
+GUILD_ID = "GH_SECRETS_GUILD_ID"
 
 # For local debug
 if os.path.exists(SECRETS_STORE_PATH):
