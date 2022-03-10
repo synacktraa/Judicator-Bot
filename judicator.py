@@ -15,7 +15,6 @@ bot = commands.Bot(
 bot.colors = constants.BOT_COLORS
 bot.color_list = [c for c in bot.colors.values()]
 
-
 @bot.event
 async def on_ready():
     print(
@@ -67,21 +66,23 @@ async def on_message(message: discord.Message):
     # Change to true if you want to enable censorship
     if constants.CENSORHIP_STATUS:
         channel = message.channel
-        msg = message.content.lower()
+        msg = message.content
         try:
             await bot.process_application_commands(message)
             """ 
                 Without this coroutine, none of the commands will be triggered.
             """
-            for string in constants.CENSORED:
-                if string in msg:
-                    censor = string
-                    for char in censor:
+            data = constants.CENSORED
+            for pattern in data:
+                if pattern in msg.lower():
+                    idx = msg.lower().find(pattern)
+                    rev_data = msg[idx:idx+len(pattern)]
+                    for char in rev_data:
                         for v in vowels:
                             if char == v:
-                                censor = censor.replace(char, '─')
-                    msg = msg.replace(string, censor)
-            if '─' in msg:
+                                rev_data = rev_data.replace(char, '\*')
+                    msg = constants.replace_ic(msg, pattern, rev_data)
+            if message.content != msg:
                 await message.delete()
                 await channel.send(message.author.mention + f" Censored: {msg} ")
             else:
