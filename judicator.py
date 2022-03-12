@@ -117,7 +117,7 @@ async def clear(
     limit: Option(int, "Enter number of messages")
 ):
     """
-        Deletes number of messages specified by user
+        Deletes number of messages specified by owner
     """
     await ctx.channel.purge(limit=limit)
     await ctx.respond("Channel cleared!")
