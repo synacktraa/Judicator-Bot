@@ -4,6 +4,7 @@ import random
 import platform
 import constants
 import utilities
+from types import SimpleNamespace
 from discord.ext import commands
 from discord.commands import Option
 
@@ -14,7 +15,7 @@ bot = commands.Bot(
     version='2.0'
 )
 bot.colors = constants.BOT_COLORS
-bot.color_list = [c for c in bot.colors.values()]
+bot.color_list = SimpleNamespace(**bot.colors)
 
 
 @bot.event
