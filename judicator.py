@@ -68,24 +68,10 @@ async def on_message(message: discord.Message):
     # Change to true if you want to enable censorship
     if constants.CENSORHIP_STATUS:
         channel = message.channel
-        censored_message = censor_message(message.content)
+        censored_message = utilities.censor_message(message.content)
         if message.content != censored_message:
             await message.delete()
             await channel.send(message.author.mention + f" Censored: {censored_message} ")
-
-
-def censor_message(msg):
-    vowels = ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U']
-    for pattern in constants.CENSORED:
-        if pattern in msg.lower():
-            idx = msg.lower().find(pattern)
-            rev_data = msg[idx:idx+len(pattern)]
-            for char in rev_data:
-                for v in vowels:
-                    if char == v:
-                        rev_data = rev_data.replace(char, '\*')
-            msg = utilities.replace_ic(msg, pattern, rev_data)
-    return msg
 
 
 @bot.slash_command(description="Ping-Pong game", guild_ids=[int(secrets.GUILD_ID)])
