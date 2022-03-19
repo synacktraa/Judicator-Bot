@@ -453,7 +453,7 @@ CENSORHIP_STATUS = False
 HELP = "/help"
 
 ACTIVITIES = {
-    'STREAM': discord.Streaming(name=HELP, url="https://www.twitch.tv"),
+    'STREAM': discord.Streaming(name=HELP, url="https://www.twitch.tv/bobross", game=HELP, platform="Twitch"),
     'SONG': discord.Activity(type=discord.ActivityType.listening, name=HELP),
     'GAME': discord.Game(name=HELP),
     'WATCH': discord.Activity(type=discord.ActivityType.watching, name=HELP)

@@ -10,8 +10,8 @@ from discord.commands import Option
 
 
 bot = commands.Bot(
-    intents=discord.Intents.all(), status=discord.Status.online,
-    help_command=None, activity=constants.ACTIVITIES['GAME'],
+    intents=discord.Intents.all(), status=discord.Status.streaming,
+    help_command=None, activity=constants.ACTIVITIES['STREAM'],
     version='2.0'
 )
 bot.colors = constants.BOT_COLORS
@@ -63,39 +63,29 @@ async def on_message(message: discord.Message):
     """
         Checks for users messages.
     """
-    vowels = ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U']
     if message.author == (bot.user or message.author.bot):
         return
     # Change to true if you want to enable censorship
     if constants.CENSORHIP_STATUS:
         channel = message.channel
-        msg = message.content
-        try:
-            await bot.process_application_commands(message)
-            """ 
-                Without this coroutine, none of the commands will be triggered.
-            """
+        censored_message = censor_message(message.content)
+        if message.content != censored_message:
+            await message.delete()
+            await channel.send(message.author.mention + f" Censored: {censored_message} ")
 
-            for pattern in constants.CENSORED:
-                if pattern in msg.lower():
-                    idx = msg.lower().find(pattern)
-                    rev_data = msg[idx:idx+len(pattern)]
-                    for char in rev_data:
-                        for v in vowels:
-                            if char == v:
-                                rev_data = rev_data.replace(char, '\*')
-                    msg = utilities.replace_ic(msg, pattern, rev_data)
-            if message.content != msg:
-                await message.delete()
-                await channel.send(message.author.mention + f" Censored: {msg} ")
-            else:
-                pass
-        except discord.errors.NotFound:
-            return
-        except discord.ext.commands.errors.CommandNotFound:
-            return
-    else:
-        pass
+
+def censor_message(msg):
+    vowels = ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U']
+    for pattern in constants.CENSORED:
+        if pattern in msg.lower():
+            idx = msg.lower().find(pattern)
+            rev_data = msg[idx:idx+len(pattern)]
+            for char in rev_data:
+                for v in vowels:
+                    if char == v:
+                        rev_data = rev_data.replace(char, '\*')
+            msg = utilities.replace_ic(msg, pattern, rev_data)
+    return msg
 
 
 @bot.slash_command(description="Ping-Pong game", guild_ids=[int(secrets.GUILD_ID)])
