@@ -21,42 +21,11 @@ bot.color_list = SimpleNamespace(**bot.colors)
 
 @bot.event
 async def on_ready():
+    channel = await bot.fetch_channel(936376047417569280)
+    await channel.purge(limit=1)
+    await channel.send("Will you share your knowledge with others and help all members of this server?", view=utilities.RoleView())
     print(
         f"-----\nLogged in as: {bot.user.name} : {bot.user.id}\n-----\nMy current activity:{bot.activity}\n-----")
-
-
-@bot.event
-async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
-    """
-        Gives a role based on a reaction emoji.
-    """
-    # Make sure that the message the user is reacting to is the one we care about.
-    if payload.message_id != 947968073070161980:
-        return
-
-    guild = await bot.fetch_guild(payload.guild_id)
-    if guild is None:
-        # Check if we're still in the guild and it's cached.
-        return
-
-    if str(payload.emoji) == "✅":
-        role_id = 917940661901209650
-    elif str(payload.emoji) == "❎":
-        role_id = 936351416430256128
-    else:
-        role_id = None
-
-    role = guild.get_role(role_id)
-    if role is None:
-        # Make sure the role still exists and is valid.
-        return
-
-    try:
-        # Finally, add the role.
-        await payload.member.add_roles(role)
-    except discord.HTTPException:
-        # If we want to do something in case of errors we'd do it here.
-        pass
 
 
 @bot.event
@@ -107,7 +76,7 @@ async def clear_error(ctx: discord.ApplicationContext, error):
         Error handler for cleaning function
     """
     if isinstance(error, commands.CheckFailure):
-        await ctx.send("Hey! You lack permission to use this command as you do not own the bot.")
+        await ctx.respond("Hey! You lack permission to use this command as you do not own the bot.")
     else:
         raise error
 
@@ -128,7 +97,7 @@ async def logout_error(ctx: discord.ApplicationContext, error):
         Whenever the logout command has an error this will be tripped.
     """
     if isinstance(error, commands.CheckFailure):
-        await ctx.send("Hey! You lack permission to use this command as you do not own the bot.")
+        await ctx.respond("Hey! You lack permission to use this command as you do not own the bot.")
     else:
         raise error
 
