@@ -26,7 +26,7 @@ async def on_ready():
 
 
 @bot.event
-async def on_raw_reaction_add(payload):
+async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
     """
         Gives a role based on a reaction emoji.
     """
