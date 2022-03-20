@@ -423,7 +423,8 @@ BLOCKED_CHANNELS = {
     'AFK', 'system', 'Solutions & Suggestions', 'suggestions',
     'exercise-discussions', 'thanks-ivan-kuzmin', 'shortcuts',
     'memes', 'ca-homework', 'trash-can', 'welcome', 'mod_channel',
-    'fop-solutions', 'ca-solutions', 'ds-solutions', 'main', 'test'
+    'fop-solutions', 'ca-solutions', 'ds-solutions', 'main', 'test',
+    'fc-bayern'
 }
 
 BOT_COLORS = {
