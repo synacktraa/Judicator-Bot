@@ -4,15 +4,16 @@ import random
 import platform
 import constants
 import utilities
+import datetime
 from types import SimpleNamespace
 from discord.ext import commands
 from discord.commands import Option
 
 
 bot = commands.Bot(
-    intents=discord.Intents.all(), status=discord.Status.streaming,
-    help_command=None, activity=constants.ACTIVITIES['STREAM'],
-    version='2.0'
+    intents=discord.Intents.all(), 
+    status=discord.Status.streaming,
+    activity=constants.ACTIVITIES['STREAM']
 )
 bot.colors = constants.BOT_COLORS
 bot.color_list = SimpleNamespace(**bot.colors)
@@ -79,8 +80,8 @@ async def ping(ctx: discord.ApplicationContext):
     await ctx.respond(f"Pong! {random.randrange(0, 1000)} ms")
 
 
-@bot.slash_command(name='hi', aliases=['hello', 'yo'], description="Greets the user", guild_ids=[int(secrets.GUILD_ID)])
-async def _hi(ctx: discord.ApplicationContext):
+@bot.slash_command(description="Greets the user", guild_ids=[int(secrets.GUILD_ID)])
+async def hi(ctx: discord.ApplicationContext):
     """
         A simple command which says hi to the author.
     """
@@ -105,13 +106,7 @@ async def clear_error(ctx: discord.ApplicationContext, error):
     """
         Error handler for cleaning function
     """
-    if isinstance(error, commands.MissingRequiredArgument):
-        # checks if an argument is missing
-        await ctx.send("Usage: $clear <int>")
-    elif isinstance(error, commands.BadArgument):
-        # checks if the argument is integer value
-        await ctx.send("Usage: $clear <int_val>")
-    elif isinstance(error, commands.CheckFailure):
+    if isinstance(error, commands.CheckFailure):
         await ctx.send("Hey! You lack permission to use this command as you do not own the bot.")
     else:
         raise error
@@ -143,25 +138,19 @@ async def stats(ctx: discord.ApplicationContext):
     """
         A usefull command that displays bot statistics.
     """
-    python_version = platform.python_version()
-    dpy_version = discord.__version__
-    server_count = len(bot.guilds)
-    member_count = len(set(bot.get_all_members()))
-
     embed = discord.Embed(title=f'{bot.user.name} Stats', description='\uFEFF',
-                          colour=ctx.author.colour)
-
-    embed.add_field(name='Python Version:', value=python_version)
-    embed.add_field(name='Discord.Py Version', value=dpy_version)
-    embed.add_field(name='Total Guilds:', value=server_count)
-    embed.add_field(name='Total Users:', value=member_count)
+                          colour=ctx.author.colour, timestamp=datetime.datetime.utcnow())
+    embed.add_field(name="Bot version:", value="2.0")
+    embed.add_field(name='Python Version:', value=platform.python_version())
+    embed.add_field(name='Discord.Py Version', value=discord.__version__)
+    embed.add_field(name='Total Guilds:', value=str(len(bot.guilds)))
+    embed.add_field(name='Total Users:', value=str(
+        len(set(bot.get_all_members()))))
     embed.add_field(name='Bot owner:', value="<@503505263119040522>")
     embed.add_field(name='Bot Developers:',
-                    value="<@503505263119040522>,<@453579828281475084>,<@890664690533957643>")
-
-    embed.set_footer(text=f"{bot.user.name}")
-    embed.set_author(name=bot.user.name, icon_url=bot.user.avatar.url)
-
+                    value="<@503505263119040522>\n<@453579828281475084>\n<@890664690533957643>")
+    embed.set_footer(text=f"{bot.user.name}",
+                     icon_url=f"{bot.user.avatar.url}")
     await ctx.respond(embed=embed)
 
 
@@ -175,8 +164,10 @@ async def source(
     temp = chan.name
     if temp not in constants.BLOCKED_CHANNELS:
         embed = discord.Embed(title=topic, description='\uFEFF',
-                              colour=ctx.author.colour)
+                              colour=ctx.author.colour, timestamp=datetime.datetime.utcnow())
         embed.add_field(name="Information", value=info)
+        embed.set_footer(text=f"{ctx.author.name}",
+                         icon_url=f"{ctx.author.avatar.url}")
         guild = bot.get_guild(int(secrets.GUILD_ID))
         for channel in guild.channels:
             if channel.name == temp:
@@ -190,20 +181,33 @@ async def source(
 
 @bot.slash_command(description="Prints all available channels", guild_ids=[int(secrets.GUILD_ID)])
 async def channels(ctx: discord.ApplicationContext):
-    output = "**Channels list:**\n|"
     guild = bot.get_guild(int(secrets.GUILD_ID))
+    embed = discord.Embed(title=f'Available Channels:', description='\uFEFF',
+                          colour=ctx.author.colour, timestamp=datetime.datetime.utcnow())
     for channel in guild.channels:
         if channel.name not in constants.BLOCKED_CHANNELS:
-            output += channel.name+"|"
-    await ctx.respond(output)
+            embed.add_field(name=f"{channel.name}:", value=channel.topic)
+    embed.set_footer(text=f"{ctx.author.name}",
+                     icon_url=f"{ctx.author.avatar.url}")
+    await ctx.respond(embed=embed)
 
 
-@bot.slash_command(name="help", description="Sends all available commands", guild_ids=[int(secrets.GUILD_ID)])
+@bot.slash_command(description="Sends all available commands", guild_ids=[int(secrets.GUILD_ID)])
 async def help(ctx: discord.ApplicationContext):
     embed = discord.Embed(title=f'Available Commands:', description='\uFEFF',
-                          colour=ctx.author.colour)
+                          colour=ctx.author.colour, timestamp=datetime.datetime.utcnow())
+    # For some reason help command is repeated twice in the list.
+    skip = 0
     for command in bot.application_commands:
-        embed.add_field(name=f"{command}", value=command.description)
+        print(command.description)
+        if command.description != "Sends all available commands":
+            embed.add_field(name=f"{command}:", value=command.description)
+        else:
+            if skip == 1:
+                embed.add_field(name=f"{command}:", value=command.description)
+            skip += 1
+    embed.set_footer(text=f"{ctx.author.name}",
+                     icon_url=f"{ctx.author.avatar.url}")
     await ctx.respond(embed=embed)
 
 
