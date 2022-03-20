@@ -199,7 +199,6 @@ async def help(ctx: discord.ApplicationContext):
     # For some reason help command is repeated twice in the list.
     skip = 0
     for command in bot.application_commands:
-        print(command.description)
         if command.description != "Sends all available commands":
             embed.add_field(name=f"{command}:", value=command.description)
         else:
