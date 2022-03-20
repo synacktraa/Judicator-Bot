@@ -11,7 +11,7 @@ from discord.commands import Option
 
 
 bot = commands.Bot(
-    intents=discord.Intents.all(), 
+    intents=discord.Intents.all(),
     status=discord.Status.streaming,
     activity=constants.ACTIVITIES['STREAM']
 )
@@ -75,20 +75,20 @@ async def on_message(message: discord.Message):
             await channel.send(message.author.mention + f" Censored: {censored_message} ")
 
 
-@bot.slash_command(description="Ping-Pong game", guild_ids=[int(secrets.GUILD_ID)])
+@bot.slash_command(description="Ping-Pong game.", guild_ids=[int(secrets.GUILD_ID)])
 async def ping(ctx: discord.ApplicationContext):
     await ctx.respond(f"Pong! {random.randrange(0, 1000)} ms")
 
 
-@bot.slash_command(description="Greets the user", guild_ids=[int(secrets.GUILD_ID)])
-async def hi(ctx: discord.ApplicationContext):
+@bot.slash_command(description="Greets the user.", guild_ids=[int(secrets.GUILD_ID)])
+async def hello(ctx: discord.ApplicationContext):
     """
         A simple command which says hi to the author.
     """
     await ctx.respond(f"Hi {ctx.author.mention}!")
 
 
-@bot.slash_command(description="Deletes the messages from channel", guild_ids=[int(secrets.GUILD_ID)])
+@bot.slash_command(description="Deletes specified amount of messages from channel.", guild_ids=[int(secrets.GUILD_ID)])
 @commands.is_owner()
 async def clear(
     ctx: discord.ApplicationContext,
@@ -112,7 +112,7 @@ async def clear_error(ctx: discord.ApplicationContext, error):
         raise error
 
 
-@bot.slash_command(description="Turns off the bot", guild_ids=[int(secrets.GUILD_ID)])
+@bot.slash_command(description="Turns off the bot.", guild_ids=[int(secrets.GUILD_ID)])
 @commands.is_owner()
 async def logout(ctx: discord.ApplicationContext):
     """
@@ -133,7 +133,7 @@ async def logout_error(ctx: discord.ApplicationContext, error):
         raise error
 
 
-@bot.slash_command(description="Shows bot information", guild_ids=[int(secrets.GUILD_ID)])
+@bot.slash_command(description="Shows bot information.", guild_ids=[int(secrets.GUILD_ID)])
 async def stats(ctx: discord.ApplicationContext):
     """
         A usefull command that displays bot statistics.
@@ -154,14 +154,14 @@ async def stats(ctx: discord.ApplicationContext):
     await ctx.respond(embed=embed)
 
 
-@bot.slash_command(description="Sends information to specific channel.", guild_ids=[int(secrets.GUILD_ID)])
-async def source(
+@bot.slash_command(description="Sends information to specific channel in beautiful block.", guild_ids=[int(secrets.GUILD_ID)])
+async def post(
         ctx: discord.ApplicationContext,
         info: Option(str, "Enter your information"),
-        chan: Option(discord.TextChannel, "Select a channel"),
+        channel: Option(discord.TextChannel, "Select a channel"),
         topic: Option(str, "Enter your title")
 ):
-    temp = chan.name
+    temp = channel.name
     if temp not in constants.BLOCKED_CHANNELS:
         embed = discord.Embed(title=topic, description='\uFEFF',
                               colour=ctx.author.colour, timestamp=datetime.datetime.utcnow())
@@ -169,9 +169,9 @@ async def source(
         embed.set_footer(text=f"{ctx.author.name}",
                          icon_url=f"{ctx.author.avatar.url}")
         guild = bot.get_guild(int(secrets.GUILD_ID))
-        for channel in guild.channels:
-            if channel.name == temp:
-                await channel.send(embed=embed)
+        for ch in guild.channels:
+            if ch.name == temp:
+                await ch.send(embed=embed)
                 await ctx.respond("Message sent!")
                 return
         await ctx.respond("Channel not found!")
@@ -179,7 +179,7 @@ async def source(
         await ctx.respond("You are not able to write messages in " + temp + " channel!")
 
 
-@bot.slash_command(description="Prints all available channels", guild_ids=[int(secrets.GUILD_ID)])
+@bot.slash_command(description="Shows all available channels for post command.", guild_ids=[int(secrets.GUILD_ID)])
 async def channels(ctx: discord.ApplicationContext):
     guild = bot.get_guild(int(secrets.GUILD_ID))
     embed = discord.Embed(title=f'Available Channels:', description='\uFEFF',
@@ -192,14 +192,14 @@ async def channels(ctx: discord.ApplicationContext):
     await ctx.respond(embed=embed)
 
 
-@bot.slash_command(description="Sends all available commands", guild_ids=[int(secrets.GUILD_ID)])
+@bot.slash_command(description="Shows all available commands.", guild_ids=[int(secrets.GUILD_ID)])
 async def help(ctx: discord.ApplicationContext):
     embed = discord.Embed(title=f'Available Commands:', description='\uFEFF',
                           colour=ctx.author.colour, timestamp=datetime.datetime.utcnow())
     # For some reason help command is repeated twice in the list.
     skip = 0
     for command in bot.application_commands:
-        if command.description != "Sends all available commands":
+        if command.description != "Shows all available commands.":
             embed.add_field(name=f"{command}:", value=command.description)
         else:
             if skip == 1:
