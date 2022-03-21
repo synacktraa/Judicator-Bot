@@ -1,12 +1,15 @@
-# Judicator Bot, created for Open Source discord server
-<p align="center"><img src="https://i.imgur.com/ySjnID2.jpg" width="300" height="400"></p>
+<h1 align=center>Judicator-Bot created for Open Source discord server</h1>
 
-## Functionality
+ <p align=center><img src="https://discordapp.com/api/guilds/636962982286589952/widget.png?style=banner4"/></p>
+
+<h2 align=center>Functionality</h2>
+
  - Censorship on server.
  - Slash commands support.
  - Buttons interactions.
 
-## Commands
+<h2 align=center>Commands</h2>
+
  - /help | Shows all available commands.
  - /ping | Simple ping-pong game.
  - /hello | Greets the user.
@@ -16,7 +19,8 @@
  - /channels | Shows available channels for source command.
  - /clear | Deletes specific number of messages.
 
-## Deploy to Heroku
+<h2 align=center>Deploy to Heroku</h2>
+
  > We are using [Heroku](https://www.heroku.com) as hosting for this bot.
 
  List of repository secrets you need to properly deploy your bot to heroku:
