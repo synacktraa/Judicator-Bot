@@ -1,6 +1,6 @@
 <h1 align=center>Judicator-Bot created for Open Source discord server</h1>
 
- <p align=center><img src="https://discordapp.com/api/guilds/636962982286589952/widget.png?style=banner4"/></p>
+ <p align=center><img src="https://discordapp.com/api/guilds/636962982286589952/widget.png?style=banner2" width="400"/></p>
 
 <h2 align=center>Functionality</h2>
 
