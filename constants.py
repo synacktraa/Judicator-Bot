@@ -424,7 +424,8 @@ BLOCKED_CHANNELS = {
     'exercise-discussions', 'thanks-ivan-kuzmin', 'shortcuts',
     'memes', 'ca-homework', 'trash-can', 'welcome', 'mod_channel',
     'fop-solutions', 'ca-solutions', 'ds-solutions', 'main', 'test',
-    'fc-bayern', 'sources-fop', 'sources-ds','sources-ca', 'matrix-test'
+    'fc-bayern', 'sources-fop', 'sources-ds','sources-ca', 'matrix-test',
+    'ARCHIVES', 'Important Information','testing room','moderators'
 }
 
 BOT_COLORS = {
