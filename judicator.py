@@ -169,8 +169,14 @@ async def attach(
 ):
     temp = channel.name
     if temp not in constants.BLOCKED_CHANNELS:
-        # Write implementation here!
-        await ctx.respond("Fuck you!")
+        guild = bot.get_guild(int(secrets.GUILD_ID))
+        tmp = await attachment.to_file(use_cached=False, spoiler=False)
+        for ch in guild.channels:
+            if ch.name == temp:
+                await ch.send(f"**{tmp.filename}** sent by "+ctx.author.mention)
+                await ch.send(file=tmp)
+                await ctx.respond("File sent!")
+                return
     else:
         await ctx.respond("You are not able to write messages in " + temp + " channel!")
 
