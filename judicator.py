@@ -161,6 +161,20 @@ async def channels(ctx: discord.ApplicationContext):
     await ctx.respond(embed=embed)
 
 
+@bot.slash_command(description="Send files to specific channel.", guild_ids=[int(secrets.GUILD_ID)])
+async def attach(
+    ctx: discord.ApplicationContext,
+    channel: Option(discord.TextChannel, "Select a channel"),
+    attachment: discord.Attachment
+):
+    temp = channel.name
+    if temp not in constants.BLOCKED_CHANNELS:
+        # Write implementation here!
+        await ctx.respond("Fuck you!")
+    else:
+        await ctx.respond("You are not able to write messages in " + temp + " channel!")
+
+
 @bot.slash_command(description="Shows all available commands.", guild_ids=[int(secrets.GUILD_ID)])
 async def help(ctx: discord.ApplicationContext):
     embed = discord.Embed(title=f'Available Commands:', description='\uFEFF',
