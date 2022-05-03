@@ -425,7 +425,8 @@ BLOCKED_CHANNELS = {
     'memes', 'ca-homework', 'trash-can', 'welcome', 'mod_channel',
     'fop-solutions', 'ca-solutions', 'ds-solutions', 'main', 'test',
     'fc-bayern', 'sources-fop', 'sources-ds','sources-ca', 'matrix-test',
-    'ARCHIVES', 'Important Information','testing room','moderators'
+    'ARCHIVES', 'Important Information','testing room','moderators',
+    'Server Information','announcements','rules'
 }
 
 BOT_COLORS = {
