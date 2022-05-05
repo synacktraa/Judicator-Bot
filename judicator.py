@@ -135,8 +135,12 @@ async def post(
         embed = discord.Embed(title=topic, description='\uFEFF',
                               colour=ctx.author.colour, timestamp=datetime.datetime.utcnow())
         embed.add_field(name="Information", value=info)
-        embed.set_footer(text=f"{ctx.author.name}",
-                         icon_url=f"{ctx.author.avatar.url}")
+        if (ctx.author.avatar.url != None):
+            embed.set_footer(text=f"{ctx.author.name}",
+                             icon_url=f"{bot.user.avatar.url}")
+        else:
+            embed.set_footer(text=f"{ctx.author.name}",
+                             icon_url=f"{ctx.author.avatar.url}")
         guild = bot.get_guild(int(secrets.GUILD_ID))
         for ch in guild.channels:
             if ch.name == temp:
