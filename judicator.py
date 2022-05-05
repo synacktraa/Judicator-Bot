@@ -135,7 +135,7 @@ async def post(
         embed = discord.Embed(title=topic, description='\uFEFF',
                               colour=ctx.author.colour, timestamp=datetime.datetime.utcnow())
         embed.add_field(name="Information", value=info)
-        if (ctx.author.avatar.url != None):
+        if (ctx.author.avatar == None):
             embed.set_footer(text=f"{ctx.author.name}",
                              icon_url=f"{bot.user.avatar.url}")
         else:
