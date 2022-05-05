@@ -20,8 +20,7 @@ def censor_message(msg):
     vowels = ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U']
     for pattern in constants.CENSORED:
         if pattern in msg.lower():
-            idx = msg.lower().find(pattern)
-            rev_data = msg[idx:idx+len(pattern)]
+            rev_data = pattern
             for char in rev_data:
                 for v in vowels:
                     if char == v:
