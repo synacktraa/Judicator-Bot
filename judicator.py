@@ -68,6 +68,7 @@ async def clear(
     """
     await ctx.channel.purge(limit=limit)
     await ctx.respond("Channel cleared!")
+    await ctx.channel.purge(limit=1)
 
 
 @clear.error
