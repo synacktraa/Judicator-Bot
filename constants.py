@@ -427,7 +427,7 @@ BLOCKED_CHANNELS = {
     'fc-bayern', 'sources-fop', 'sources-ds','sources-ca', 'matrix-test',
     'ARCHIVES', 'Important Information','testing room','moderators',
     'Server Information','announcements','rules', 'shortcuts-second-semester',
-    'shortcuts-first-semester'
+    'shortcuts-first-semester', 'holy-crushade'
 }
 
 BOT_COLORS = {
