@@ -1,1 +1,1 @@
-discord-bot: python judicator.py
+discord-bot: python main.py
