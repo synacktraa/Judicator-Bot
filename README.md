@@ -18,6 +18,7 @@
  - /post | Sends message in block to specific channel.
  - /channels | Shows available channels for source command.
  - /clear | Deletes specific number of messages.
+ - /attach | Sends attached file to specific channel.
 
 <h2 align=center>Deploy to Heroku</h2>
 
