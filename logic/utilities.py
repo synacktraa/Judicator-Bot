@@ -1,4 +1,4 @@
-import constants
+from logic import constants
 import discord
 from discord.ui import View
 

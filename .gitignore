@@ -5,3 +5,5 @@ secrets.cpython-39.pyc
 constants.cpython-310.pyc
 utilities.cpython-310.pyc
 legacy.cpython-310.pyc
+judicator.cpython-310.pyc
+setup_secrets.cpython-310.pyc
