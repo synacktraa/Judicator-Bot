@@ -151,6 +151,7 @@ async def post(
             if ch.name == temp:
                 await ch.send(embed=embed)
                 await ctx.respond("Message sent!")
+                await ctx.channel.purge(limit=1)
                 return
         await ctx.respond("Channel not found!")
     else:
@@ -185,6 +186,7 @@ async def attach(
                 await ch.send(f"**{tmp.filename}** sent by "+ctx.author.mention)
                 await ch.send(file=tmp)
                 await ctx.respond("File sent!")
+                await ctx.channel.purge(limit=1)
                 return
     else:
         await ctx.respond("You are not able to write messages in " + temp + " channel!")
