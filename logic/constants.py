@@ -428,7 +428,7 @@ BLOCKED_CHANNELS = {
     'ARCHIVES', 'Important Information','testing room','moderators',
     'Server Information','announcements','rules', 'shortcuts-second-semester',
     'shortcuts-first-semester', 'holy-crushade',"Artwork & more", "sfw", "nsfw",
-    'la-hw', 'Holy Crushade'
+    'la-hw', 'Holy Crushade', 'lecture-materials-webhook'
 }
 
 BOT_COLORS = {
