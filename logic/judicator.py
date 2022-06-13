@@ -61,6 +61,14 @@ async def hello(ctx: discord.ApplicationContext):
     await ctx.respond(f"Hi {ctx.author.mention}!")
 
 
+@bot.slash_command(description="Tells user where is his/her dad.", guild_ids=[int(GUILD_ID)])
+async def whereismydad(ctx: discord.ApplicationContext):
+    """
+        A simple command which says something to the author.
+    """
+    await ctx.respond(f"Went to buy milk for {ctx.author.mention}!")
+
+
 @bot.slash_command(description="Deletes specified amount of messages from channel.", guild_ids=[int(GUILD_ID)])
 @commands.is_owner()
 async def clear(
